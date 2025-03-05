@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<head>
+    
+<title>Create project</title>
+
+</head>
+
+<body>
+    <form>Create new Project</form>    
+    <label>Project name</label>
+    <input type="text" id="projectName">
+    <label>Save directory</label>
+    <input type="text" id="saveDirectory">
+    <button id="createProject">Create Project</button>
+</body>
+
+<script>
+    document.getElementById('createProject').addEventListener('click', () => {
+        //create new file where the project will be stored (maybe JSON)
+        //open up the project editor
+        let projectName = document.getElementById('projectName').value;
+        let saveDirectory = document.getElementById('saveDirectory').value;
+        console.log(projectName, saveDirectory);
+        window.open('Project.html');
+    })
+</script>

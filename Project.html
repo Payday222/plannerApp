@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<head> 
+    <title>Your D&D Campaign</title>
+</head>
+
+<body>
+    <div id="leftPanel">
+        <button id="createNPC">Create NPC</button>
+        <button id="createMonster">Create Monster</button>
+        <button id="createStructure">Create Structure</button>
+        <button id="createDungeon">Create Dungeon</button>
+        <button id="createBuilding">Create Building</button>
+        <button id="createProp">Create Prop</button>
+        <button id="createLoot">Create Loot Cxtem</button>
+        <button id="createChest">Create Loot Chest</button>
+    </div>
+
+    <div id="FormContainer"></div> 
+
+    <script>
+        document.getElementById('createNPC').addEventListener('click', () => {
+            // Clear existing form if already open
+            const container = document.getElementById("FormContainer");
+            container.innerHTML = "";
+
+            // Create form
+            const form = document.createElement("form");
+            form.id = "npcForm";
+
+            // NPC class
+            class NPC {
+                constructor(name, gender, age, race, profession, description, alignment) {
+                    this.name = name;
+                    this.gender = gender;
+                    this.age = age;
+                    this.race = race;
+                    this.profession = profession;
+                    this.description = description;
+                    this.alignment = alignment;
+                }
+            }
+            class Monster {
+                constructor(name, isHostile, age, alignment, damage, isVisible, level, XP_reward, description) {
+                    this.name = name;
+                    this.isHostile = isHostile;
+                    this.age = age;
+                    this.alignment = alignment;
+                    this.damage = damage;
+                    this.isVisible = isVisible;
+                    this.level = level;
+                    this.XP_reward = XP_reward;
+                    this.description = description;
+                }
+            }
+            // Fields for NPC
+            const NPCfields = ["Name", "Gender", "Age", "Race", "Profession", "Description", "Alignment"];
+            NPCfields.forEach(field => {
+                const label = document.createElement("label");
+                label.textContent = field + ":";
+                const input = document.createElement("input");
+                input.type = field === "Age" ? "number" : "text"; // Age field as number
+                input.id = field.toLowerCase();
+                
+                form.appendChild(label);
+                form.appendChild(input);
+                form.appendChild(document.createElement("br"));
+            });
+
+            // Submit button
+            const submitButton = document.createElement("button");
+            submitButton.textContent = "Save NPC";
+            submitButton.type = "button";
+            submitButton.addEventListener("click", () => {
+                // Get input values
+                const npc = new NPC(
+                    document.getElementById("name").value,
+                    document.getElementById("gender").value,
+                    document.getElementById("age").value,
+                    document.getElementById("race").value,
+                    document.getElementById("profession").value,
+                    document.getElementById("description").value,
+                    document.getElementById("alignment").value
+                );
+
+                console.log("New NPC Created:", npc); // Log for now (store it somewhere)
+            });
+
+            form.appendChild(submitButton);
+            container.appendChild(form);
+        });
+
+        document.getElementById('createMonster').addEventListener('click', () => {
+            const Monsterfields = ["Name", "is Hostile", "Age", "Alignment", "Damage", "is Visible", "Level", "XP reward", "Description"];
+            Monsterfields.forEach(field => {
+                const label = document.createElement("label");
+                label.textContent = field + ":";
+                const input = document.createElement('input');
+                if(field === "Age" || "Damage" || "Level" || "XP Reward") {
+                    input.type = "number";
+                } else if(field === "is Hostile" || "is Visible") {
+                    input.type = "checkbox";
+                } else {
+                    input.type = "text";
+                }
+                input.id = field.toLowerCase();
+
+                form;appendChild(label);
+                form.appendChild(input);
+                form.appendChild(document.createElement('br'));
+            });
+        })
+    </script>
+</body>
