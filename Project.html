@@ -1,6 +1,108 @@
 <!DOCTYPE html>
 <head> 
     <title>Your D&D Campaign</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start; /* Ensure the left panel sticks to the left */
+            align-items: flex-start; /* Align the content to the top */
+            height: 100vh;
+        }
+    
+        #leftPanel {
+            background-color: #2e3b4e;
+            color: white;
+            padding: 20px;
+            width: 200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: fixed; /* This will keep the panel on the left side, even when scrolling */
+            left: 0;
+        }
+    
+        #leftPanel button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    
+        #leftPanel button:hover {
+            background-color: #45a049;
+        }
+    
+        #FormContainer {
+            margin-left: 220px; /* Adds space so the content doesn't overlap with the left panel */
+            padding: 20px;
+            width: 70%;
+            max-width: 800px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+    
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    
+        label {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    
+        input[type="text"],
+        input[type="number"],
+        input[type="checkbox"],
+        input[type="file"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+            margin-top: 5px;
+        }
+    
+        input[type="checkbox"] {
+            width: auto;
+        }
+    
+        button[type="button"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 150px;
+            margin-top: 20px;
+            align-self: center;
+        }
+    
+        button[type="button"]:hover {
+            background-color: #0056b3;
+        }
+    
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+    
 </head>
 
 <body>
@@ -11,7 +113,7 @@
         <button id="createDungeon">Create Dungeon</button>
         <button id="createBuilding">Create Building</button>
         <button id="createProp">Create Prop</button>
-        <button id="createLoot">Create Loot Cxtem</button>
+        <button id="createLoot">Create Loot Item</button>
         <button id="createChest">Create Loot Chest</button>
     </div>
 
@@ -37,19 +139,6 @@
                     this.profession = profession;
                     this.description = description;
                     this.alignment = alignment;
-                }
-            }
-            class Monster {
-                constructor(name, isHostile, age, alignment, damage, isVisible, level, XP_reward, description) {
-                    this.name = name;
-                    this.isHostile = isHostile;
-                    this.age = age;
-                    this.alignment = alignment;
-                    this.damage = damage;
-                    this.isVisible = isVisible;
-                    this.level = level;
-                    this.XP_reward = XP_reward;
-                    this.description = description;
                 }
             }
             // Fields for NPC
@@ -90,24 +179,204 @@
         });
 
         document.getElementById('createMonster').addEventListener('click', () => {
-            const Monsterfields = ["Name", "is Hostile", "Age", "Alignment", "Damage", "is Visible", "Level", "XP reward", "Description"];
-            Monsterfields.forEach(field => {
-                const label = document.createElement("label");
-                label.textContent = field + ":";
-                const input = document.createElement('input');
-                if(field === "Age" || "Damage" || "Level" || "XP Reward") {
-                    input.type = "number";
-                } else if(field === "is Hostile" || "is Visible") {
-                    input.type = "checkbox";
-                } else {
-                    input.type = "text";
+            class Monster {
+                constructor(name, isHostile, age, alignment, damage, isVisible, level, XP_reward, description) {
+                    this.name = name;
+                    this.isHostile = isHostile;
+                    this.age = age;
+                    this.alignment = alignment;
+                    this.damage = damage;
+                    this.isVisible = isVisible;
+                    this.level = level;
+                    this.XP_reward = XP_reward;
+                    this.description = description;
                 }
-                input.id = field.toLowerCase();
+            }
+    
+    const container = document.getElementById("FormContainer");
+    container.innerHTML = "";
 
-                form;appendChild(label);
-                form.appendChild(input);
-                form.appendChild(document.createElement('br'));
-            });
-        })
+    //clear form
+    const form = document.createElement("form");
+    form.id = "monsterForm";
+
+    
+    const Monsterfields = ["Name", "is Hostile", "Age", "Alignment", "Damage", "is Visible", "Level", "XP reward", "Description"];
+    Monsterfields.forEach(field => {
+        const label = document.createElement("label");
+        label.textContent = field + ":";
+        const input = document.createElement("input");
+
+        
+        if (field === "Age" || field === "Damage" || field === "Level" || field === "XP reward") {
+            input.type = "number";
+        } else if (field === "is Hostile" || field === "is Visible") {
+            input.type = "checkbox";
+        } else {
+            input.type = "text";
+        }
+        input.id = field.toLowerCase().replace(/\s+/g, '_'); // Convert field names to valid IDs
+
+        form.appendChild(label);
+        form.appendChild(input);
+        form.appendChild(document.createElement("br"));
+    });
+
+    // Submit button
+    const submitButton = document.createElement("button");
+    submitButton.textContent = "Save Monster";
+    submitButton.type = "button";
+    submitButton.addEventListener("click", () => {
+        
+        const monster = new Monster(
+            document.getElementById("name").value,
+            document.getElementById("is_hostile").checked,
+            document.getElementById("age").value,
+            document.getElementById("alignment").value,
+            document.getElementById("damage").value,
+            document.getElementById("is_visible").checked,
+            document.getElementById("level").value,
+            document.getElementById("xp_reward").value,
+            document.getElementById("description").value
+        );
+
+        console.log("New Monster Created:", monster);
+    });
+
+    form.appendChild(submitButton);
+    container.appendChild(form);
+});
+document.getElementById('createStructure').addEventListener('click', () => {
+
+        class Structure {
+                constructor(name, description, size, population, government, location, isFriendly, climate, loot, quests, secrets) {
+                    this.name = name;
+                    this.description = description;
+                    this.size = size;
+                    this.population = population;
+                    this.government = government;
+                    this.location = location;
+                    this.isFriendly = isFriendly;
+                    this.climate = climate;
+                    this.loot = loot;
+                    this.quests = quests;
+                    this.secrets = secrets;
+
+                }
+            }
+
+    const container = document.getElementById("FormContainer");
+    container.innerHTML = "";
+
+    const form = document.createElement("form");
+    form.id = "structureForm";
+
+    const structureFields = ["name", "description", "size", "population", "government", "location", "is_friendly", "climate", "loot", "quests", "secrets"]
+    structureFields.forEach(field => {
+            const label = document.createElement('label');
+            label.textContent = field + ":";
+            const input = document.createElement('input');
+
+            if(field === "population") {
+                input.type = "number";
+            } else if(field === "is Friendly") {
+                input.type = "checkbox";
+            } else {
+                input.type = "text";
+            }
+
+            input.id = field.toLowerCase();
+
+            form.appendChild(label);
+            form.appendChild(input);
+            form.appendChild(document.createElement("br"));
+        });
+    const submitButton = document.createElement("button");
+    submitButton.textContent = "Save Structure";
+    submitButton.type = "button";
+    submitButton.addEventListener("click", () => {
+        const structure = new Structure(
+            document.getElementById('name').value,
+            document.getElementById('description').value,
+            document.getElementById('size').value,
+            document.getElementById('population').value,
+            document.getElementById('government').value,
+            document.getElementById('location').value,
+            document.getElementById('is_friendly').value,
+            document.getElementById('climate').value,
+            document.getElementById('loot').value,
+            document.getElementById('quests').value,
+            document.getElementById('secrets').value
+        );
+        console.log("New structure created", structure);
+    });
+    form.appendChild(submitButton);
+    container.appendChild(form);
+    });
+
+    document.getElementById('createDungeon').addEventListener('click', () => {
+        const container = document.getElementById("FormContainer");
+        class Dungeon {
+        constructor(name, description, loot, monsters, boss, map, roomCount, difficulty, NPCs, riddles, puzzles, secrets) {
+        this.name = name;
+        this.description = description;
+        this.loot = loot;
+        this.monsters = monsters;
+        this.boss = boss;
+        this.map = map;
+        this.roomCount = roomCount;
+        this.difficulty = difficulty;
+        this.NPCs = NPCs;
+        this.riddles = riddles;
+        this.puzzles = puzzles;
+        this.secrets = secrets;
+            }
+        }
+
+        const form = document.createElement("form");
+        form.id = "dungeonForm";
+        dungeonFields = ["name", "description", "loot", "monsters", "boss", "map", "roomCount", "difficulty", "NPCs", "riddles", "puzzles", "secrets"];
+        dungeonFields.forEach(field => {
+            const label = document.createElement('label');
+            label.textContent = field + ":";
+            const input = document.createElement('input');
+
+            if(field === "roomCount") {
+                input.type = "number";
+            } else if(field === "map") {
+                input.type = "file";
+            }else {
+                input.type = "text";
+            }
+            input.id = field.toLowerCase();
+
+            form.appendChild(label);
+            form.appendChild(input);
+            form.appendChild(document.createElement("br"));
+        });
+        const submitButton = document.createElement("button");
+    submitButton.textContent = "Save Dungeon";
+    submitButton.type = "button";
+    submitButton.addEventListener('click', () => {
+        dungeon = new Dungeon(
+            document.getElementById('name'),
+            document.getElementById('description'),
+            document.getElementById('loot'),
+            document.getElementById('monsters'),
+            document.getElementById('boss'),
+            document.getElementById('map'),
+            document.getElementById('roomCount'),
+            document.getElementById('difficulty'),
+            document.getElementById('NPCs'),
+            document.getElementById('riddles'),
+            document.getElementById('puzzles'),
+            document.getElementById('secrets'),
+            document.getElementById('riddles')
+        );
+        console.log("new dungeon created", dungeon);
+    });
+    form.appendChild(submitButton);
+    container.appendChild(form);
+    });
     </script>
 </body>
