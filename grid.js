@@ -18,10 +18,9 @@ function createCell(x, y) {
 
 function generateCells(count) {
     const cellsPerRow = Math.floor(gridContainer.clientWidth / cellWidth); // Calculate cells per row based on container width
-    const cellsPerColumn = Math.floor(gridContainer.clientHeight / cellHeight); // Calculate cells per column based on container height
-
-    // Ensure cellsPerRow and cellsPerColumn are valid
-    if (cellsPerRow <= 0 || cellsPerColumn <= 0) return; // Prevent invalid calculations
+    
+    // Check if cellsPerRow is zero or invalid
+    if (cellsPerRow <= 0) return; // If it's zero, avoid generating cells
 
     const totalCells = cellCount; // Store the current total cell count
 
@@ -32,20 +31,14 @@ function generateCells(count) {
     }
 
     cellCount += count; // Update the total cell count
-    checkGridDimensions(); // Check if the grid dimensions are large enough for horizontal and vertical scrolling
+    checkGridWidth(); // Check if the grid width is large enough for horizontal scroll
 }
 
-function checkGridDimensions() {
+function checkGridWidth() {
     const cellsPerRow = Math.floor(gridContainer.clientWidth / cellWidth);
-    const cellsPerColumn = Math.floor(gridContainer.clientHeight / cellHeight);
     const totalRows = Math.ceil(cellCount / cellsPerRow);
-    
-    // Dynamically calculate grid width and height
     const gridWidth = cellsPerRow * cellWidth;
-    const gridHeight = cellsPerColumn * cellHeight;
-
     gridContainer.style.width = `${gridWidth}px`; // Dynamically set the grid container width
-    gridContainer.style.height = `${gridHeight}px`; // Dynamically set the grid container height
 }
 
 function checkScroll() {
@@ -70,11 +63,6 @@ function checkScroll() {
     // Check for horizontal scroll in the opposite direction
     if (scrollLeft < 10) {
         generateCells(20); // Generate more cells when scrolling left
-    }
-
-    // Check for vertical scroll in the opposite direction
-    if (scrollTop < 10) {
-        generateCells(20); // Generate more cells when scrolling up
     }
 }
 
