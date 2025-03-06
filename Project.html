@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <head> 
     <title>Your D&D Campaign</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
-            margin: 0;
             padding: 0;
             display: flex;
             justify-content: flex-start; /* Ensure the left panel sticks to the left */
             align-items: flex-start; /* Align the content to the top */
+            margin: 0;
+            overflow: auto;
             height: 100vh;
         }
     
@@ -100,6 +100,32 @@
             font-size: 24px;
             text-align: center;
             color: #333;
+        }        
+        #gridContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 50px); /* Auto-fill with 50px wide cells */
+            grid-auto-rows: 50px; /* Set row height to 50px */
+            gap: 0; /* No gap between cells */
+            overflow: auto; /* Enable scrolling when content overflows */
+            width: 100%; /* Adjust to fill the container */
+            height: 100vh; /* Adjust height as needed */
+            position: relative;
+            border: 1px solid #000; /* Add a border to see the grid container */
+            min-width: 100%; /* Make sure the container can expand horizontally */
+        }
+        
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px; /* Cell width */
+            height: 50px; /* Cell height */
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Include padding and border in width/height */
+            background-color: #f9f9f9;
+        }        
+        .cell:hover {
+            background-color: #f0f0f0; /* Hover effect */
         }
     </style>
     
@@ -119,7 +145,10 @@
 
     <div id="FormContainer"></div> 
 
+    <div id="gridContainer"></div>
+    <script src="grid.js"></script>
     <script>
+        
         document.getElementById('createNPC').addEventListener('click', () => {
             // Clear existing form if already open
             const container = document.getElementById("FormContainer");
