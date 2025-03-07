@@ -125,7 +125,20 @@
             background-color: #f9f9f9;
         }        
         .cell:hover {
-            background-color: #f0f0f0; /* Hover effect */
+            background-color: #f0f0f0;
+        }
+        div[class^="cell"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px; /* Cell width */
+            height: 50px; /* Cell height */
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Include padding and border in width/height */
+            background-color: #f9f9f9;
+          }
+        div[class^="cell"]:hover {
+            background-color: #f0f0f0;
         }
     </style>
     
@@ -184,7 +197,6 @@
                 form.appendChild(document.createElement("br"));
             });
 
-            // Submit button
             const submitButton = document.createElement("button");
             submitButton.textContent = "Save NPC";
             submitButton.type = "button";
@@ -202,7 +214,15 @@
 
                 console.log("New NPC Created:", npc); // Log for now (store it somewhere)
             });
-
+             //! coordinates
+             const coordinateLabel = document.createElement('label');
+             coordinateLabel.textContent = "Select tile";
+             const coordinateInput = document.createElement('input');
+             coordinateInput.id = "coordinateInput";
+             form.appendChild(coordinateLabel);
+             form.appendChild(coordinateInput);
+             //!
+             container.appendChild(createImageLibrary());
             form.appendChild(submitButton);
             container.appendChild(form);
         });
@@ -271,7 +291,15 @@
 
         console.log("New Monster Created:", monster);
     });
-
+     //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+     container.appendChild(createImageLibrary());
     form.appendChild(submitButton);
     container.appendChild(form);
 });
@@ -339,12 +367,22 @@ document.getElementById('createStructure').addEventListener('click', () => {
         );
         console.log("New structure created", structure);
     });
+     //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+     container.appendChild(createImageLibrary());
     form.appendChild(submitButton);
     container.appendChild(form);
     });
 
     document.getElementById('createDungeon').addEventListener('click', () => {
         const container = document.getElementById("FormContainer");
+        container.innerHTML = "";
         class Dungeon {
         constructor(name, description, loot, monsters, boss, map, roomCount, difficulty, NPCs, riddles, puzzles, secrets) {
         this.name = name;
@@ -403,9 +441,385 @@ document.getElementById('createStructure').addEventListener('click', () => {
             document.getElementById('riddles')
         );
         console.log("new dungeon created", dungeon);
+        let coordinates = document.getElementById('coordinateInput').value;
+        console.log("spawning dungeon at:", coordinates);
+        parts = coordinates.split(',');
+    x =  parts[0];
+    y = parts[1];
+    console.log('x:',x, "y", y)
+    const cellID = `cell${x}${y}`;
+    console.log('cellID: ', cellID);
+    const cell = document.getElementById(cellID);
+    console.log(cell);
     });
+     //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+     container.appendChild(createImageLibrary());
     form.appendChild(submitButton);
     container.appendChild(form);
+    
+    
+    
     });
+
+    document.getElementById('createBuilding').addEventListener('click', () => {
+        container = document.getElementById('FormContainer');
+        container.innerHTML = "";
+
+        class Building {
+            constructor(name, description, type, NPCs, Hostile, Accessible, Locked, Shop, Rooms) {
+
+            }
+        }
+        const form = document.createElement('form');
+        form.id = 'buildingForm';
+        buildingFields = ["name", "description", "type", "NPCs", "Hostile", "Accessible", "Locked", "Shop", "Rooms"];
+        buildingFields.forEach(field => {
+            const label = document.createElement('label');
+            label.textContent = field + ":";
+            const input = document.createElement('input');
+            input.id = 'buildingInput' + field;
+
+            if(field === "Hostile" || field === "Accessible" || field === "Locked" || field === "Shop") {
+                input.type = 'checkbox';
+            } else {
+                input.type = "text";
+            }
+            form.appendChild(label);
+            form.appendChild(input);
+            form.appendChild(document.createElement('br'));
+        });
+        const submitButton = document.createElement('button');
+        submitButton.textContent = "Create Building";
+        submitButton.type = "button";
+        submitButton.addEventListener('click', () => {
+            building = new Building (
+                document.getElementById('name'),
+                document.getElementById('description'),
+                document.getElementById('type'),
+                document.getElementById('NPCs'),
+                document.getElementById('Hostile'),
+                document.getElementById('Accessible'),
+                document.getElementById('Locked'),
+                document.getElementById('Shop'),
+                document.getElementById('Rooms')
+            );
+            console.log('new building created', building);
+            let coordinates = document.getElementById('coordinateInput').value;
+            console.log("spawning dungeon at:", coordinates);
+            parts = coordinates.split(',');
+            x =  parts[0];
+            y = parts[1];
+            console.log('x:',x, "y", y)
+            const cellID = `cell${x}${y}`;
+            console.log('cellID: ', cellID);
+            const cell = document.getElementById(cellID);
+            console.log(cell);
+                
+        });
+
+    //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+     container.appendChild(createImageLibrary());
+    form.appendChild(submitButton);
+    container.appendChild(form);
+
+    });
+
+    document.getElementById('createProp').addEventListener('click', () => {
+        const container = document.getElementById('FormContainer');
+        container.innerHTML = "";
+    
+        class Prop {
+            constructor(image, name, description, func) {}
+        }
+    
+        const form = document.createElement('form');
+        form.id = 'propForm';
+        const propFields = ["image", "name", "description", "function"];
+    
+        propFields.forEach(field => {
+            const label = document.createElement('label');
+            label.textContent = field + ":";
+            const input = document.createElement('input');
+            input.id = 'propInput' + field;
+    
+            if (field === "image") {
+                input.type = "file";
+            } else {
+                input.type = "text";
+            }
+            
+            form.appendChild(label);
+            form.appendChild(input);
+            form.appendChild(document.createElement('br'));
+        });
+    
+        const submitButton = document.createElement('button');
+        submitButton.textContent = "Create Prop";
+        submitButton.type = "button";
+        submitButton.addEventListener('click', () => {
+            const prop = new Prop(
+                document.getElementById('propInputimage').files[0],
+                document.getElementById('propInputname').value,
+                document.getElementById('propInputdescription').value,
+                document.getElementById('propInputfunction').value
+            );
+    
+            console.log('New prop created', prop);
+        });
+        //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+        container.appendChild(createImageLibrary());
+        form.appendChild(submitButton);
+        container.appendChild(form);
+    });
+    
+    document.getElementById('createLoot').addEventListener('click', () => {
+        const container = document.getElementById('FormContainer');
+        container.innerHTML = "";
+    
+        class Loot {
+            constructor(name, location, description, visible, value, guarded, guards) {}
+        }
+    
+        const form = document.createElement('form');
+        form.id = 'lootForm';
+        const lootFields = ["name", "location", "description", "Visible", "Value", "Guarded", "guards"];
+    
+        lootFields.forEach(field => {
+            const label = document.createElement('label');
+            label.textContent = field + ":";
+            const input = document.createElement('input');
+            input.id = 'lootInput' + field;
+    
+            if (field === "Visible" || field === "Guarded") {
+                input.type = "checkbox";
+            } else {
+                input.type = "text";
+            }
+    
+            form.appendChild(label);
+            form.appendChild(input);
+            form.appendChild(document.createElement('br'));
+        });
+    
+        const submitButton = document.createElement('button');
+        submitButton.textContent = "Create Loot";
+        submitButton.type = "button";
+        submitButton.addEventListener('click', () => {
+            const loot = new Loot(
+                document.getElementById('lootInputname').value,
+                document.getElementById('lootInputlocation').value,
+                document.getElementById('lootInputdescription').value,
+                document.getElementById('lootInputVisible').checked,
+                document.getElementById('lootInputValue').value,
+                document.getElementById('lootInputGuarded').checked,
+                document.getElementById('lootInputguards').value
+            );
+    
+            console.log('New loot created', loot);
+        });
+        //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+        container.appendChild(createImageLibrary());
+        form.appendChild(submitButton);
+        container.appendChild(form);
+    });
+    
+    document.getElementById('createChest').addEventListener('click', () => {
+        const container = document.getElementById('FormContainer');
+        container.innerHTML = "";
+    
+        class Chest {
+            constructor(name, location, description, contents, locked, key, guarded, guards, visible) {}
+        }
+    
+        const form = document.createElement('form');
+        form.id = 'chestForm';
+        const chestFields = ["name", "location", "description", "contents", "locked", "key", "guarded", "guards", "visible"];
+    
+        chestFields.forEach(field => {
+            const label = document.createElement('label');
+            label.textContent = field + ":";
+            const input = document.createElement('input');
+            input.id = 'chestInput' + field;
+    
+            if (["locked", "guarded", "visible"].includes(field)) {
+                input.type = "checkbox";
+            } else {
+                input.type = "text";
+            }
+    
+            form.appendChild(label);
+            form.appendChild(input);
+            form.appendChild(document.createElement('br'));
+        });
+    
+        const submitButton = document.createElement('button');
+        submitButton.textContent = "Create Chest";
+        submitButton.type = "button";
+        submitButton.addEventListener('click', () => {
+            const chest = new Chest(
+                document.getElementById('chestInputname').value,
+                document.getElementById('chestInputlocation').value,
+                document.getElementById('chestInputdescription').value,
+                document.getElementById('chestInputcontents').value,
+                document.getElementById('chestInputlocked').checked,
+                document.getElementById('chestInputkey').value,
+                document.getElementById('chestInputguarded').checked,
+                document.getElementById('chestInputguards').value,
+                document.getElementById('chestInputvisible').checked
+            );
+    
+            console.log('New chest created', chest);
+        });
+        //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+        container.appendChild(createImageLibrary());
+        form.appendChild(submitButton);
+        container.appendChild(form);
+    });
+
+    const imageLibrary = [
+    "images/campfire.jpg",
+    "images/castle.jpg",
+    "images/castleRuin.jpg",
+    "images/cathedral.jpg",
+    "images/city.jpg",
+    "images/crater.jpg",
+    "images/dark_tower.jpg",
+    "images/dwarf_thing.jpg",
+    "images/fortified_tower_ruin.jpg",
+    "images/fortress.jpg",
+    "images/house.jpg",
+    "images/hut.jpg",
+    "images/keep.jpg",
+    "images/mill.jpg",
+    "images/mine.jpg",
+    "images/mine_ruin.jpg",
+    "images/monster_city.jpg",
+    "images/monster_village.jpg",
+    "images/orc_camp.jpg",
+    "images/small_city.jpg",
+    "images/small_city_smothing.jpg",
+    "images/small_tower.jpg",
+    "images/strange_castle.jpg",
+    "images/tavern.jpg",
+    "images/tavern_ruin.jpg",
+    "images/tower.jpg",
+    "images/town.jpg",
+    "images/town_ruin.jpg",
+    "images/town_stone.jpg",
+    "images/town_wood.jpg",
+    "images/village.jpg",
+    "images/village_stone.jpg",
+    "images/village_stone_ruin.jpg",
+    "images/village_wood.jpg",
+    "images/witch_hut.jpg",
+    "images/wood_gate.jpg",
+    "images/wood_wall.jpg"
+    ];
+
+    let currentIndex = 0; // To keep track of the current set of images
+
+    function createImageLibrary() {
+        const container = document.createElement('div');
+        container.id = 'imgLib';
+        container.style.display = 'flex';
+        container.style.height = '500px';
+        container.style.gap = '10px';
+        
+        const imgContainer = document.createElement('div');
+        imgContainer.id = 'imageContainer';
+        imgContainer.style.display = 'flex';
+        
+        // Function to update the displayed images
+        function updateImages() {
+            imgContainer.innerHTML = ""; // Clear current images
+            const imagesToShow = imageLibrary.slice(currentIndex, currentIndex + 3); // Get the next 3 images
+            imagesToShow.forEach(src => {
+                let img = document.createElement('img');
+                img.src = src;
+                img.style.width = '50px'; // Set a fixed width for images
+                img.style.height = '100px'; // Maintain aspect ratio
+                img.addEventListener('click', () => {
+                    selectedImage = src;
+                    document.querySelectorAll("#imageContainer img").forEach(i => i.style.border = "none");
+                    img.style.border = "3px solid red";
+                });
+                imgContainer.appendChild(img);
+            });
+        }
+    
+        // Create navigation buttons
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Previous';
+        prevButton.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex -= 3; // Move back by 3 images
+                updateImages();
+            } else {
+                currentIndex = imageLibrary.length - 1;
+                updateImages();
+            }
+        });
+    
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Next';
+        nextButton.addEventListener('click', () => {
+            if (currentIndex + 3 < imageLibrary.length) {
+                currentIndex += 3; // Move forward by 3 images
+                updateImages();
+            } else {
+                currentIndex = 0;
+                updateImages();
+            }
+            
+        }); 
+        prevButton.style.height = '50px';
+        nextButton.style.height = '50px';
+    
+        // Initial image display
+        updateImages();
+    
+        // Append everything to the container
+        container.appendChild(prevButton);
+        container.appendChild(imgContainer);
+        container.appendChild(nextButton);
+        
+        return container;
+    }
+    
     </script>
 </body>
