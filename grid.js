@@ -6,6 +6,7 @@ const cellHeight = 50;
 function createCell(x, y) {
     const cell = document.createElement('div');
     cell.className = `cell${x}${y}`;
+    cell.id = `cell${x}${y}`;
     cell.dataset.x = x;
     cell.dataset.y = y;
     cell.innerHTML = `<strong>${x}, ${y}</strong>`;
@@ -15,7 +16,7 @@ function createCell(x, y) {
         console.log(`Cell clicked at: (${x}, ${y})`);
 
         const coordinateInput = document.getElementById("coordinateInput");
-        coordinateInput.value = `${x}, ${y}`;
+        coordinateInput.value = `${x},${y}`;
     });
 
     // Attach right-click event listener as well (optional)

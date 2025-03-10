@@ -140,6 +140,21 @@
         div[class^="cell"]:hover {
             background-color: #f0f0f0;
         }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+            white-space: pre-wrap; /* Keeps JSON formatting */
+            z-index: 1000;
+            width: fi;
+            height: fit-content;
+            font-size: medium;
+        }
+        
     </style>
     
 </head>
@@ -166,14 +181,14 @@
             // Clear existing form if already open
             const container = document.getElementById("FormContainer");
             container.innerHTML = "";
-
+        
             // Create form
             const form = document.createElement("form");
             form.id = "npcForm";
-
+        
             // NPC class
             class NPC {
-                constructor(name, gender, age, race, profession, description, alignment) {
+                constructor(name, gender, age, race, profession, description, alignment, coordinates) {
                     this.name = name;
                     this.gender = gender;
                     this.age = age;
@@ -181,8 +196,10 @@
                     this.profession = profession;
                     this.description = description;
                     this.alignment = alignment;
+                    this.coordinates = coordinates;  // New property for coordinates
                 }
             }
+        
             // Fields for NPC
             const NPCfields = ["Name", "Gender", "Age", "Race", "Profession", "Description", "Alignment"];
             NPCfields.forEach(field => {
@@ -196,7 +213,17 @@
                 form.appendChild(input);
                 form.appendChild(document.createElement("br"));
             });
-
+        
+            // Coordinates field
+            const coordinateLabel = document.createElement('label');
+            coordinateLabel.textContent = "Select tile";
+            const coordinateInput = document.createElement('input');
+            coordinateInput.id = "coordinateInput";
+            form.appendChild(coordinateLabel);
+            form.appendChild(coordinateInput);
+            form.appendChild(document.createElement("br"));
+        
+            // Submit button
             const submitButton = document.createElement("button");
             submitButton.textContent = "Save NPC";
             submitButton.type = "button";
@@ -209,27 +236,32 @@
                     document.getElementById("race").value,
                     document.getElementById("profession").value,
                     document.getElementById("description").value,
-                    document.getElementById("alignment").value
+                    document.getElementById("alignment").value,
+                    document.getElementById("coordinateInput").value // Get coordinates
                 );
-
+        
                 console.log("New NPC Created:", npc); // Log for now (store it somewhere)
+                let coordinates = document.getElementById('coordinateInput').value;
+                console.log("Spawning dungeon at:", coordinates);
+                const parts = coordinates.split(',');
+                const x = parts[0];
+                const y = parts[1];
+                console.log('x:', x, "y:", y);
+                const cellID = `cell${x}${y}`;
+                console.log('cellID:', cellID);
+                const cell = document.getElementById(cellID);
+                console.log(cell);
+                SaveOnMap(x,y,npc);
             });
-             //! coordinates
-             const coordinateLabel = document.createElement('label');
-             coordinateLabel.textContent = "Select tile";
-             const coordinateInput = document.createElement('input');
-             coordinateInput.id = "coordinateInput";
-             form.appendChild(coordinateLabel);
-             form.appendChild(coordinateInput);
-             //!
-             container.appendChild(createImageLibrary());
-            form.appendChild(submitButton);
+            container.appendChild(createImageLibrary());
             container.appendChild(form);
+            form.appendChild(submitButton);
         });
-
+        
         document.getElementById('createMonster').addEventListener('click', () => {
+            // Monster class
             class Monster {
-                constructor(name, isHostile, age, alignment, damage, isVisible, level, XP_reward, description) {
+                constructor(name, isHostile, age, alignment, damage, isVisible, level, XP_reward, description, coordinates) {
                     this.name = name;
                     this.isHostile = isHostile;
                     this.age = age;
@@ -239,74 +271,87 @@
                     this.level = level;
                     this.XP_reward = XP_reward;
                     this.description = description;
+                    this.coordinates = coordinates; // New property for coordinates
                 }
             }
-    
-    const container = document.getElementById("FormContainer");
-    container.innerHTML = "";
-
-    //clear form
-    const form = document.createElement("form");
-    form.id = "monsterForm";
-
-    
-    const Monsterfields = ["Name", "is Hostile", "Age", "Alignment", "Damage", "is Visible", "Level", "XP reward", "Description"];
-    Monsterfields.forEach(field => {
-        const label = document.createElement("label");
-        label.textContent = field + ":";
-        const input = document.createElement("input");
-
         
-        if (field === "Age" || field === "Damage" || field === "Level" || field === "XP reward") {
-            input.type = "number";
-        } else if (field === "is Hostile" || field === "is Visible") {
-            input.type = "checkbox";
-        } else {
-            input.type = "text";
-        }
-        input.id = field.toLowerCase().replace(/\s+/g, '_'); // Convert field names to valid IDs
-
-        form.appendChild(label);
-        form.appendChild(input);
-        form.appendChild(document.createElement("br"));
-    });
-
-    // Submit button
-    const submitButton = document.createElement("button");
-    submitButton.textContent = "Save Monster";
-    submitButton.type = "button";
-    submitButton.addEventListener("click", () => {
+            const container = document.getElementById("FormContainer");
+            container.innerHTML = "";
         
-        const monster = new Monster(
-            document.getElementById("name").value,
-            document.getElementById("is_hostile").checked,
-            document.getElementById("age").value,
-            document.getElementById("alignment").value,
-            document.getElementById("damage").value,
-            document.getElementById("is_visible").checked,
-            document.getElementById("level").value,
-            document.getElementById("xp_reward").value,
-            document.getElementById("description").value
-        );
-
-        console.log("New Monster Created:", monster);
-    });
-     //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
-     container.appendChild(createImageLibrary());
-    form.appendChild(submitButton);
-    container.appendChild(form);
-});
-document.getElementById('createStructure').addEventListener('click', () => {
-
-        class Structure {
-                constructor(name, description, size, population, government, location, isFriendly, climate, loot, quests, secrets) {
+            // Create form
+            const form = document.createElement("form");
+            form.id = "monsterForm";
+        
+            const monsterFields = ["Name", "is Hostile", "Age", "Alignment", "Damage", "is Visible", "Level", "XP reward", "Description"];
+            monsterFields.forEach(field => {
+                const label = document.createElement("label");
+                label.textContent = field + ":";
+                const input = document.createElement("input");
+        
+                if (field === "Age" || field === "Damage" || field === "Level" || field === "XP reward") {
+                    input.type = "number";
+                } else if (field === "is Hostile" || field === "is Visible") {
+                    input.type = "checkbox";
+                } else {
+                    input.type = "text";
+                }
+                input.id = field.toLowerCase().replace(/\s+/g, '_'); // Convert field names to valid IDs
+        
+                form.appendChild(label);
+                form.appendChild(input);
+                form.appendChild(document.createElement("br"));
+            });
+        
+            // Coordinates field
+            const coordinateLabel = document.createElement('label');
+            coordinateLabel.textContent = "Select tile";
+            const coordinateInput = document.createElement('input');
+            coordinateInput.id = "coordinateInput";
+            form.appendChild(coordinateLabel);
+            form.appendChild(coordinateInput);
+            form.appendChild(document.createElement("br"));
+        
+            // Submit button
+            const submitButton = document.createElement("button");
+            submitButton.textContent = "Save Monster";
+            submitButton.type = "button";
+            submitButton.addEventListener("click", () => {
+                // Get input values
+                const monster = new Monster(
+                    document.getElementById("name").value,
+                    document.getElementById("is_hostile").checked,
+                    document.getElementById("age").value,
+                    document.getElementById("alignment").value,
+                    document.getElementById("damage").value,
+                    document.getElementById("is_visible").checked,
+                    document.getElementById("level").value,
+                    document.getElementById("xp_reward").value,
+                    document.getElementById("description").value,
+                    document.getElementById("coordinateInput").value // Get coordinates
+                );
+                let coordinates = document.getElementById('coordinateInput').value;
+                console.log("Spawning dungeon at:", coordinates);
+        
+                const parts = coordinates.split(',');
+                const x = parts[0];
+                const y = parts[1];
+                console.log('x:', x, "y:", y);
+                const cellID = `cell${x}${y}`;
+                console.log('cellID:', cellID);
+                const cell = document.getElementById(cellID);
+                console.log(cell);
+                SaveOnMap(X,Y,monster);
+                console.log("New Monster Created:", monster);
+            });
+            container.appendChild(createImageLibrary());
+            container.appendChild(form);
+            form.appendChild(submitButton);
+        });
+        
+        document.getElementById('createStructure').addEventListener('click', () => {
+            // Structure class
+            class Structure {
+                constructor(name, description, size, population, government, location, isFriendly, climate, loot, quests, secrets, coordinates) {
                     this.name = name;
                     this.description = description;
                     this.size = size;
@@ -318,175 +363,207 @@ document.getElementById('createStructure').addEventListener('click', () => {
                     this.loot = loot;
                     this.quests = quests;
                     this.secrets = secrets;
-
+                    this.coordinates = coordinates; // New property for coordinates
                 }
             }
-
-    const container = document.getElementById("FormContainer");
-    container.innerHTML = "";
-
-    const form = document.createElement("form");
-    form.id = "structureForm";
-
-    const structureFields = ["name", "description", "size", "population", "government", "location", "is_friendly", "climate", "loot", "quests", "secrets"]
-    structureFields.forEach(field => {
-            const label = document.createElement('label');
-            label.textContent = field + ":";
-            const input = document.createElement('input');
-
-            if(field === "population") {
-                input.type = "number";
-            } else if(field === "is Friendly") {
-                input.type = "checkbox";
-            } else {
-                input.type = "text";
-            }
-
-            input.id = field.toLowerCase();
-
-            form.appendChild(label);
-            form.appendChild(input);
+        
+            const container = document.getElementById("FormContainer");
+            container.innerHTML = "";
+        
+            // Create form
+            const form = document.createElement("form");
+            form.id = "structureForm";
+        
+            const structureFields = ["name", "description", "size", "population", "government", "location", "is_friendly", "climate", "loot", "quests", "secrets"];
+            structureFields.forEach(field => {
+                const label = document.createElement('label');
+                label.textContent = field + ":";
+                const input = document.createElement('input');
+        
+                if (field === "population") {
+                    input.type = "number";
+                } else if (field === "is Friendly") {
+                    input.type = "checkbox";
+                } else {
+                    input.type = "text";
+                }
+        
+                input.id = field.toLowerCase();
+                form.appendChild(label);
+                form.appendChild(input);
+                form.appendChild(document.createElement("br"));
+            });
+        
+            // Coordinates field
+            const coordinateLabel = document.createElement('label');
+            coordinateLabel.textContent = "Select tile";
+            const coordinateInput = document.createElement('input');
+            coordinateInput.id = "coordinateInput";
+            form.appendChild(coordinateLabel);
+            form.appendChild(coordinateInput);
             form.appendChild(document.createElement("br"));
+        
+            // Submit button
+            const submitButton = document.createElement("button");
+            submitButton.textContent = "Save Structure";
+            submitButton.type = "button";
+            submitButton.addEventListener("click", () => {
+                // Get input values
+                const structure = new Structure(
+                    document.getElementById('name').value,
+                    document.getElementById('description').value,
+                    document.getElementById('size').value,
+                    document.getElementById('population').value,
+                    document.getElementById('government').value,
+                    document.getElementById('location').value,
+                    document.getElementById('is_friendly').checked,
+                    document.getElementById('climate').value,
+                    document.getElementById('loot').value,
+                    document.getElementById('quests').value,
+                    document.getElementById('secrets').value,
+                    document.getElementById('coordinateInput').value // Get coordinates
+                );
+                let coordinates = document.getElementById('coordinateInput').value;
+                console.log("Spawning dungeon at:", coordinates);
+        
+                const parts = coordinates.split(',');
+                const x = parts[0];
+                const y = parts[1];
+                console.log('x:', x, "y:", y);
+                const cellID = `cell${x}${y}`;
+                console.log('cellID:', cellID);
+                const cell = document.getElementById(cellID);
+                console.log(cell);
+                SaveOnMap(x,y,structure);
+                console.log("New Structure Created:", structure);
+            });
+            container.appendChild(createImageLibrary());
+            container.appendChild(form);
+            form.appendChild(submitButton);
         });
-    const submitButton = document.createElement("button");
-    submitButton.textContent = "Save Structure";
-    submitButton.type = "button";
-    submitButton.addEventListener("click", () => {
-        const structure = new Structure(
-            document.getElementById('name').value,
-            document.getElementById('description').value,
-            document.getElementById('size').value,
-            document.getElementById('population').value,
-            document.getElementById('government').value,
-            document.getElementById('location').value,
-            document.getElementById('is_friendly').value,
-            document.getElementById('climate').value,
-            document.getElementById('loot').value,
-            document.getElementById('quests').value,
-            document.getElementById('secrets').value
-        );
-        console.log("New structure created", structure);
-    });
-     //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
-     container.appendChild(createImageLibrary());
-    form.appendChild(submitButton);
-    container.appendChild(form);
-    });
+        
 
     document.getElementById('createDungeon').addEventListener('click', () => {
         const container = document.getElementById("FormContainer");
         container.innerHTML = "";
+    
         class Dungeon {
-        constructor(name, description, loot, monsters, boss, map, roomCount, difficulty, NPCs, riddles, puzzles, secrets) {
-        this.name = name;
-        this.description = description;
-        this.loot = loot;
-        this.monsters = monsters;
-        this.boss = boss;
-        this.map = map;
-        this.roomCount = roomCount;
-        this.difficulty = difficulty;
-        this.NPCs = NPCs;
-        this.riddles = riddles;
-        this.puzzles = puzzles;
-        this.secrets = secrets;
+            constructor(name, description, loot, monsters, boss, map, roomCount, difficulty, NPCs, riddles, puzzles, secrets) {
+                this.name = name;
+                this.description = description;
+                this.loot = loot;
+                this.monsters = monsters;
+                this.boss = boss;
+                this.map = map;
+                this.roomCount = roomCount;
+                this.difficulty = difficulty;
+                this.NPCs = NPCs;
+                this.riddles = riddles;
+                this.puzzles = puzzles;
+                this.secrets = secrets;
             }
         }
-
+    
         const form = document.createElement("form");
         form.id = "dungeonForm";
-        dungeonFields = ["name", "description", "loot", "monsters", "boss", "map", "roomCount", "difficulty", "NPCs", "riddles", "puzzles", "secrets"];
+        const dungeonFields = ["name", "description", "loot", "monsters", "boss", "map", "roomCount", "difficulty", "NPCs", "riddles", "puzzles", "secrets"];
+    
         dungeonFields.forEach(field => {
             const label = document.createElement('label');
             label.textContent = field + ":";
             const input = document.createElement('input');
-
-            if(field === "roomCount") {
+    
+            if (field === "roomCount") {
                 input.type = "number";
-            } else if(field === "map") {
+            } else if (field === "map") {
                 input.type = "file";
-            }else {
+            } else {
                 input.type = "text";
             }
-            input.id = field.toLowerCase();
-
+            input.id = "dungeonInput" + field;
+    
             form.appendChild(label);
             form.appendChild(input);
             form.appendChild(document.createElement("br"));
         });
+    
+        // Adding coordinates input
+        const coordinateLabel = document.createElement('label');
+        coordinateLabel.textContent = "Select tile";
+        const coordinateInput = document.createElement('input');
+        coordinateInput.id = "coordinateInput";
+        form.appendChild(coordinateLabel);
+        form.appendChild(coordinateInput);
+    
         const submitButton = document.createElement("button");
-    submitButton.textContent = "Save Dungeon";
-    submitButton.type = "button";
-    submitButton.addEventListener('click', () => {
-        dungeon = new Dungeon(
-            document.getElementById('name'),
-            document.getElementById('description'),
-            document.getElementById('loot'),
-            document.getElementById('monsters'),
-            document.getElementById('boss'),
-            document.getElementById('map'),
-            document.getElementById('roomCount'),
-            document.getElementById('difficulty'),
-            document.getElementById('NPCs'),
-            document.getElementById('riddles'),
-            document.getElementById('puzzles'),
-            document.getElementById('secrets'),
-            document.getElementById('riddles')
-        );
-        console.log("new dungeon created", dungeon);
-        let coordinates = document.getElementById('coordinateInput').value;
-        console.log("spawning dungeon at:", coordinates);
-        parts = coordinates.split(',');
-    x =  parts[0];
-    y = parts[1];
-    console.log('x:',x, "y", y)
-    const cellID = `cell${x}${y}`;
-    console.log('cellID: ', cellID);
-    const cell = document.getElementById(cellID);
-    console.log(cell);
+        submitButton.textContent = "Save Dungeon";
+        submitButton.type = "button";
+        submitButton.addEventListener('click', () => {
+            const dungeon = new Dungeon(
+                document.getElementById('dungeonInputname').value,
+                document.getElementById('dungeonInputdescription').value,
+                document.getElementById('dungeonInputloot').value,
+                document.getElementById('dungeonInputmonsters').value,
+                document.getElementById('dungeonInputboss').value,
+                document.getElementById('dungeonInputmap').files[0], // Assuming file is selected
+                document.getElementById('dungeonInputroomCount').value,
+                document.getElementById('dungeonInputdifficulty').value,
+                document.getElementById('dungeonInputNPCs').value,
+                document.getElementById('dungeonInputriddles').value,
+                document.getElementById('dungeonInputpuzzles').value,
+                document.getElementById('dungeonInputsecrets').value
+            );
+            console.log("New dungeon created", dungeon);
+    
+            let coordinates = document.getElementById('coordinateInput').value;
+            console.log("Spawning dungeon at:", coordinates);
+    
+            const parts = coordinates.split(',');
+            const x = parts[0];
+            const y = parts[1];
+            console.log('x:', x, "y:", y);
+            const cellID = `cell${x}${y}`;
+            console.log('cellID:', cellID);
+            const cell = document.getElementById(cellID);
+            console.log(cell);
+            SaveOnMap(x,y, dungeon);
+        });
+    
+        container.appendChild(createImageLibrary());
+        form.appendChild(submitButton);
+        container.appendChild(form);
     });
-     //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
-     container.appendChild(createImageLibrary());
-    form.appendChild(submitButton);
-    container.appendChild(form);
     
-    
-    
-    });
 
     document.getElementById('createBuilding').addEventListener('click', () => {
-        container = document.getElementById('FormContainer');
+        const container = document.getElementById('FormContainer');
         container.innerHTML = "";
-
+    
         class Building {
             constructor(name, description, type, NPCs, Hostile, Accessible, Locked, Shop, Rooms) {
-
+                this.name = name;
+                this.description = description;
+                this.type = type;
+                this.NPCs = NPCs;
+                this.Hostile = Hostile;
+                this.Accessible = Accessible;
+                this.Locked = Locked;
+                this.Shop = Shop;
+                this.Rooms = Rooms;
             }
         }
+    
         const form = document.createElement('form');
         form.id = 'buildingForm';
-        buildingFields = ["name", "description", "type", "NPCs", "Hostile", "Accessible", "Locked", "Shop", "Rooms"];
+        const buildingFields = ["name", "description", "type", "NPCs", "Hostile", "Accessible", "Locked", "Shop", "Rooms"];
+    
         buildingFields.forEach(field => {
             const label = document.createElement('label');
             label.textContent = field + ":";
             const input = document.createElement('input');
             input.id = 'buildingInput' + field;
-
-            if(field === "Hostile" || field === "Accessible" || field === "Locked" || field === "Shop") {
+    
+            if (field === "Hostile" || field === "Accessible" || field === "Locked" || field === "Shop") {
                 input.type = 'checkbox';
             } else {
                 input.type = "text";
@@ -495,55 +572,62 @@ document.getElementById('createStructure').addEventListener('click', () => {
             form.appendChild(input);
             form.appendChild(document.createElement('br'));
         });
+    
+        const coordinateLabel = document.createElement('label');
+        coordinateLabel.textContent = "Select tile";
+        const coordinateInput = document.createElement('input');
+        coordinateInput.id = "coordinateInput";
+        form.appendChild(coordinateLabel);
+        form.appendChild(coordinateInput);
+    
         const submitButton = document.createElement('button');
         submitButton.textContent = "Create Building";
         submitButton.type = "button";
         submitButton.addEventListener('click', () => {
-            building = new Building (
-                document.getElementById('name'),
-                document.getElementById('description'),
-                document.getElementById('type'),
-                document.getElementById('NPCs'),
-                document.getElementById('Hostile'),
-                document.getElementById('Accessible'),
-                document.getElementById('Locked'),
-                document.getElementById('Shop'),
-                document.getElementById('Rooms')
+            const building = new Building(
+                document.getElementById('buildingInputname').value,
+                document.getElementById('buildingInputdescription').value,
+                document.getElementById('buildingInputtype').value,
+                document.getElementById('buildingInputNPCs').value,
+                document.getElementById('buildingInputHostile').checked,
+                document.getElementById('buildingInputAccessible').checked,
+                document.getElementById('buildingInputLocked').checked,
+                document.getElementById('buildingInputShop').checked,
+                document.getElementById('buildingInputRooms').value
             );
-            console.log('new building created', building);
+            console.log('New building created:', building);
+    
             let coordinates = document.getElementById('coordinateInput').value;
-            console.log("spawning dungeon at:", coordinates);
-            parts = coordinates.split(',');
-            x =  parts[0];
-            y = parts[1];
-            console.log('x:',x, "y", y)
+            console.log("Spawning building at:", coordinates);
+            let parts = coordinates.split(',');
+            let x = parts[0];
+            let y = parts[1];
+            console.log('x:', x, "y:", y);
             const cellID = `cell${x}${y}`;
-            console.log('cellID: ', cellID);
+            console.log('cellID:', cellID);
             const cell = document.getElementById(cellID);
             console.log(cell);
-                
+    
+            SaveOnMap(x, y, building);
         });
-
-    //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
-     container.appendChild(createImageLibrary());
-    form.appendChild(submitButton);
-    container.appendChild(form);
-
+    
+        container.appendChild(createImageLibrary());
+        form.appendChild(submitButton);
+        container.appendChild(form);
     });
+    
 
     document.getElementById('createProp').addEventListener('click', () => {
         const container = document.getElementById('FormContainer');
         container.innerHTML = "";
     
         class Prop {
-            constructor(image, name, description, func) {}
+            constructor(image, name, description, func) {
+                this.image = image;
+                this.name = name;
+                this.description = description;
+                this.func = func;
+            }
         }
     
         const form = document.createElement('form');
@@ -581,7 +665,6 @@ document.getElementById('createStructure').addEventListener('click', () => {
             console.log('New prop created', prop);
             
         //! coordinates
-      console.log('new building created', building);
             let coordinates = document.getElementById('coordinateInput').value;
             console.log("spawning dungeon at:", coordinates);
             parts = coordinates.split(',');
@@ -592,6 +675,7 @@ document.getElementById('createStructure').addEventListener('click', () => {
             console.log('cellID: ', cellID);
             const cell = document.getElementById(cellID);
             console.log(cell);
+            SaveOnMap(x,y, prop);
                 
         });
 
@@ -617,7 +701,15 @@ document.getElementById('createStructure').addEventListener('click', () => {
         container.innerHTML = "";
     
         class Loot {
-            constructor(name, location, description, visible, value, guarded, guards) {}
+            constructor(name, location, description, visible, value, guarded, guards) {
+                this.name = name;
+                this.location = location;
+                this.description = description;
+                this.visible = visible;
+                this.value = value;
+                this.guarded = guarded;
+                this.guards = guards;
+            }
         }
     
         const form = document.createElement('form');
@@ -656,7 +748,6 @@ document.getElementById('createStructure').addEventListener('click', () => {
             );
     
             console.log('New loot created', loot);
-             console.log('new building created', building);
             let coordinates = document.getElementById('coordinateInput').value;
             console.log("spawning dungeon at:", coordinates);
             parts = coordinates.split(',');
@@ -667,40 +758,37 @@ document.getElementById('createStructure').addEventListener('click', () => {
             console.log('cellID: ', cellID);
             const cell = document.getElementById(cellID);
             console.log(cell);
-                
+            SaveOnMap(x,y, loot)
         });
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
 
-    //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
-     container.appendChild(createImageLibrary());
-    form.appendChild(submitButton);
-    container.appendChild(form);
-        });
-        //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
         container.appendChild(createImageLibrary());
         form.appendChild(submitButton);
         container.appendChild(form);
 
-    
+    });
     document.getElementById('createChest').addEventListener('click', () => {
         const container = document.getElementById('FormContainer');
         container.innerHTML = "";
     
         class Chest {
-            constructor(name, location, description, contents, locked, key, guarded, guards, visible) {}
+            constructor(name, location, description, contents, locked, key, guarded, guards, visible) {
+                this.name = name;
+                this.location = location;
+                this.description = description;
+                this.contents = contents;
+                this.locked = locked;
+                this.key = key;
+                this.guarded = guarded;
+                this.guards = guards;
+                this.visible = visible;
+            }
         }
     
         const form = document.createElement('form');
@@ -724,6 +812,15 @@ document.getElementById('createStructure').addEventListener('click', () => {
             form.appendChild(document.createElement('br'));
         });
     
+        //! Coordinates Input
+        const coordinateLabel = document.createElement('label');
+        coordinateLabel.textContent = "Select tile (x,y):";
+        const coordinateInput = document.createElement('input');
+        coordinateInput.id = "coordinateInput";
+        form.appendChild(coordinateLabel);
+        form.appendChild(coordinateInput);
+        
+        //! Submit Button
         const submitButton = document.createElement('button');
         submitButton.textContent = "Create Chest";
         submitButton.type = "button";
@@ -740,33 +837,32 @@ document.getElementById('createStructure').addEventListener('click', () => {
                 document.getElementById('chestInputvisible').checked
             );
     
-            console.log('New chest created', chest);
-          console.log('new building created', building);
-            let coordinates = document.getElementById('coordinateInput').value;
-            console.log("spawning dungeon at:", coordinates);
-            parts = coordinates.split(',');
-            x =  parts[0];
-            y = parts[1];
-            console.log('x:',x, "y", y)
+            let coordinates = document.getElementById('coordinateInput').value.trim();
+            let parts = coordinates.split(',');
+            if (parts.length < 2) {
+                console.error("Invalid coordinates!");
+                return;
+            }
+    
+            let x = parts[0].trim();
+            let y = parts[1].trim();
             const cellID = `cell${x}${y}`;
-            console.log('cellID: ', cellID);
-            const cell = document.getElementById(cellID);
-            console.log(cell);
-                
+            console.log('cellID:', cellID);
+            const cells = document.getElementsByClassName(cellID);
+    
+            if (cells.length === 0) {
+                console.error('Cell not found:', cellID);
+                return;
+            }
+    
+            SaveOnMap(x, y, chest);
         });
-
-    //! coordinates
-     const coordinateLabel = document.createElement('label');
-     coordinateLabel.textContent = "Select tile";
-     const coordinateInput = document.createElement('input');
-     coordinateInput.id = "coordinateInput";
-     form.appendChild(coordinateLabel);
-     form.appendChild(coordinateInput);
-     //!
-     container.appendChild(createImageLibrary());
-    form.appendChild(submitButton);
-    container.appendChild(form);
+    
+        form.appendChild(submitButton);
+        container.appendChild(createImageLibrary());
+        container.appendChild(form);
     });
+    
 
     const imageLibrary = [
     "images/campfire.jpg",
@@ -808,8 +904,8 @@ document.getElementById('createStructure').addEventListener('click', () => {
     "images/wood_wall.jpg"
     ];
 
-    let currentIndex = 0; // To keep track of the current set of images
-
+    let selectedImage = null; // To keep track of the current set of images
+    let currentIndex = 0;
     function createImageLibrary() {
         const container = document.createElement('div');
         container.id = 'imgLib';
@@ -876,6 +972,45 @@ document.getElementById('createStructure').addEventListener('click', () => {
         
         return container;
     }
-    z
+    function SaveOnMap(x, y, ObjectData) {
+        const cells = document.getElementsByClassName(`cell${x}${y}`);
+        if (cells.length === 0) {
+            console.error(`Cell with class "cell${x}${y}" not found!`);
+            return;
+        }
+        console.log('PASSED DATA:', x, y, ObjectData);
+    
+        const cell = cells[0]; // Get the first cell
+    
+        // Create the image and add it to the cell
+        const cellIMG = document.createElement('img');
+        cellIMG.src = selectedImage;
+        cellIMG.style.width = '50px';
+        cellIMG.style.height = '50px';
+        cell.appendChild(cellIMG);
+    
+        // Create a tooltip (hidden by default)
+        const tooltip = document.createElement('div');
+        tooltip.classList.add('tooltip');
+        tooltip.textContent = JSON.stringify(ObjectData, null, 2);
+        document.body.appendChild(tooltip);
+    
+        // Event Listeners for hover
+        cell.addEventListener('mouseenter', (event) => {
+            tooltip.style.display = 'block';
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY + 10 + 'px';
+        });
+    
+        cell.addEventListener('mousemove', (event) => {
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY + 10 + 'px';
+        });
+    
+        cell.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+        });
+    }
+    
     </script>
 </body>
