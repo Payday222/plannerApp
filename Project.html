@@ -579,14 +579,33 @@ document.getElementById('createStructure').addEventListener('click', () => {
             );
     
             console.log('New prop created', prop);
-        });
+            
         //! coordinates
+      console.log('new building created', building);
+            let coordinates = document.getElementById('coordinateInput').value;
+            console.log("spawning dungeon at:", coordinates);
+            parts = coordinates.split(',');
+            x =  parts[0];
+            y = parts[1];
+            console.log('x:',x, "y", y)
+            const cellID = `cell${x}${y}`;
+            console.log('cellID: ', cellID);
+            const cell = document.getElementById(cellID);
+            console.log(cell);
+                
+        });
+
+    //! coordinates
      const coordinateLabel = document.createElement('label');
      coordinateLabel.textContent = "Select tile";
      const coordinateInput = document.createElement('input');
      coordinateInput.id = "coordinateInput";
      form.appendChild(coordinateLabel);
      form.appendChild(coordinateInput);
+     //!
+     container.appendChild(createImageLibrary());
+    form.appendChild(submitButton);
+    container.appendChild(form);
      //!
         container.appendChild(createImageLibrary());
         form.appendChild(submitButton);
@@ -637,6 +656,31 @@ document.getElementById('createStructure').addEventListener('click', () => {
             );
     
             console.log('New loot created', loot);
+             console.log('new building created', building);
+            let coordinates = document.getElementById('coordinateInput').value;
+            console.log("spawning dungeon at:", coordinates);
+            parts = coordinates.split(',');
+            x =  parts[0];
+            y = parts[1];
+            console.log('x:',x, "y", y)
+            const cellID = `cell${x}${y}`;
+            console.log('cellID: ', cellID);
+            const cell = document.getElementById(cellID);
+            console.log(cell);
+                
+        });
+
+    //! coordinates
+     const coordinateLabel = document.createElement('label');
+     coordinateLabel.textContent = "Select tile";
+     const coordinateInput = document.createElement('input');
+     coordinateInput.id = "coordinateInput";
+     form.appendChild(coordinateLabel);
+     form.appendChild(coordinateInput);
+     //!
+     container.appendChild(createImageLibrary());
+    form.appendChild(submitButton);
+    container.appendChild(form);
         });
         //! coordinates
      const coordinateLabel = document.createElement('label');
@@ -649,7 +693,7 @@ document.getElementById('createStructure').addEventListener('click', () => {
         container.appendChild(createImageLibrary());
         form.appendChild(submitButton);
         container.appendChild(form);
-    });
+
     
     document.getElementById('createChest').addEventListener('click', () => {
         const container = document.getElementById('FormContainer');
@@ -697,8 +741,21 @@ document.getElementById('createStructure').addEventListener('click', () => {
             );
     
             console.log('New chest created', chest);
+          console.log('new building created', building);
+            let coordinates = document.getElementById('coordinateInput').value;
+            console.log("spawning dungeon at:", coordinates);
+            parts = coordinates.split(',');
+            x =  parts[0];
+            y = parts[1];
+            console.log('x:',x, "y", y)
+            const cellID = `cell${x}${y}`;
+            console.log('cellID: ', cellID);
+            const cell = document.getElementById(cellID);
+            console.log(cell);
+                
         });
-        //! coordinates
+
+    //! coordinates
      const coordinateLabel = document.createElement('label');
      coordinateLabel.textContent = "Select tile";
      const coordinateInput = document.createElement('input');
@@ -706,9 +763,9 @@ document.getElementById('createStructure').addEventListener('click', () => {
      form.appendChild(coordinateLabel);
      form.appendChild(coordinateInput);
      //!
-        container.appendChild(createImageLibrary());
-        form.appendChild(submitButton);
-        container.appendChild(form);
+     container.appendChild(createImageLibrary());
+    form.appendChild(submitButton);
+    container.appendChild(form);
     });
 
     const imageLibrary = [
@@ -813,13 +870,12 @@ document.getElementById('createStructure').addEventListener('click', () => {
         // Initial image display
         updateImages();
     
-        // Append everything to the container
         container.appendChild(prevButton);
         container.appendChild(imgContainer);
         container.appendChild(nextButton);
         
         return container;
     }
-    
+    z
     </script>
 </body>
